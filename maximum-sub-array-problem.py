@@ -1,59 +1,80 @@
-import random
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-
-# create sample and ad prices up
-sample_data = [random.randint(-0, 100) for _ in range(100)]
-sample_cumsum = np.cumsum(sample_data)
+from apr_max_sub_seq_test import measure_times, run_tests
 
 
 
-# algorithm with double for loop
-def get_Best_Options_double_for(prices):
+# algorithm with double for loop and prices as list
+def get_best_options_double_for(change_rates):
 
-    span, max_i, min_i = (0,)*3
+    if len(change_rates) == 0:
+        return 0
+
+    prices = np.cumsum(change_rates).tolist()
+    prices.insert(0, 0)
+    diff = 0
 
     for (i, price_i) in enumerate(prices):
         for j in range(i, len(prices)):
-            if prices[j] - price_i > span:
-                span = prices[j] - price_i
-                min_i = i
-                max_i = j
+            if prices[j] - price_i > diff:
+                diff = prices[j] - price_i
 
-    return max_i, min_i
+    return diff
 
 
+# reverse for loop over prices
+def get_best_options_reversed_for(change_rates):
 
-def get_Best_Options_reversed_for(prices):
+    if len(change_rates) == 0:
+        return 0
 
-    prices = prices.tolist()
-    span, max_i, min_i = (0,)*3
+    prices = np.cumsum(change_rates).tolist()
+    prices.insert(0, 0)
+    diff = 0
     max_price = prices[-1]
 
     for price in reversed(prices):
         if price > max_price:
             max_price = price
         
-        if max_price - price > span: 
-            span = max_price - price
-            min_i = prices.index(price)
-            max_i = prices.index(max_price)
+        if max_price - price > diff: 
+            diff = max_price - price
 
 
-    return max_i, min_i
+    return diff
         
 
-#call both algos to test
-print(get_Best_Options_double_for(sample_cumsum))
-print(get_Best_Options_reversed_for(sample_cumsum))
+
+# reverse for loop over rates
+def get_max_span(change_rates): 
+
+    if len(change_rates) == 0:
+        return 0
+
+    max_diff = 0
+    current_price = change_rates[-1]
+    max_price = change_rates[-1]
+
+    for change_rate in reversed(change_rates):
+        current_price -= change_rate
+
+        if current_price > max_price:
+            max_price = current_price
+
+        current_diff = max_price - current_price
+
+        if current_diff > max_diff:
+            max_diff = current_diff
+    
+    return max_diff
 
 
-#plot results
 
-max_i, min_i = get_Best_Options_double_for(sample_cumsum)
+run_tests(get_best_options_double_for)
+run_tests(get_best_options_reversed_for)
+run_tests(get_max_span)
 
-plt.plot(sample_cumsum)
-plt.scatter(max_i, sample_cumsum[max_i], color="green")
-plt.scatter(min_i, sample_cumsum[min_i], color="red")
-plt.show()
+
+measure_times(get_best_options_double_for)
+measure_times(get_best_options_reversed_for)
+measure_times(get_max_span)
+ 
