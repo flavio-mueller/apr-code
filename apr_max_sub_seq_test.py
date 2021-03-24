@@ -73,7 +73,7 @@ def measure_times(func, last_result_only=False, number=1):
     t1 = timeit.timeit(lambda: func(data), number=number)
     if not last_result_only:
         print(n, ' values: ', t1, 'sec')
-    while t1 < 10 and n < 10000000:
+    while t1 < 10 and n < 1000000:
         n *= 2
         t0 = t1
         data = _rand_data(n)
