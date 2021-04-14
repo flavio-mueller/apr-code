@@ -1,4 +1,5 @@
 import numpy as np
+import timeit
 from apr_max_sub_seq_test import measure_times, run_tests
 
 
@@ -22,7 +23,7 @@ def get_best_options_double_for(change_rates):
 
 
 # reverse for loop over prices
-def get_best_options_reversed_for(change_rates):
+def jget_best_options_reversed_for(change_rates):
 
     if len(change_rates) == 0:
         return 0
@@ -46,15 +47,17 @@ def get_best_options_reversed_for(change_rates):
 
 # reverse for loop over rates
 def get_max_span(changes): 
+
     max_diff, current_diff = 0, 0
+
     for change in changes:
-        if b > 0:
-            b = b + c
+        if current_diff > 0:
+            current_diff = current_diff + change
         else:
-            b = c
-        if b > a:
-            a = b
-    return a
+            current_diff = change
+        if current_diff > max_diff:
+            max_diff = current_diff
+    return max_diff
 
 
 def max_sub_seq_3_py(data):
@@ -70,11 +73,33 @@ def max_sub_seq_3_py(data):
 
 
 
-run_tests(get_max_span)
-run_tests(max_sub_seq_3_py)
+
+def get_best_options_reversed_for(changes):
+
+     span, price = 0, 0
+     max_price = changes[-1]
+
+     for change in reversed(changes):
+         price = price - change
+         if price > max_price:
+             max_price = price
+
+         if max_price - price > span: 
+             span = max_price - price
+             
+     return span
 
 
 
-measure_times(get_max_span)
+
+
+# run_tests(get_max_span)
+# run_tests(get_best_options_reversed_for)
+
+
+
+# measure_times(get_max_span)
  
-measure_times(max_sub_seq_3_py)
+# measure_times(get_best_options_reversed_for)
+
+
